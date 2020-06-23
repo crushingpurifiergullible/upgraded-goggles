@@ -19,6 +19,7 @@ provider:
   # env vars are made available to our functions under process.env
   environment:
     tableName: notes
+    stripeSecretKey: ${env:STRIPE_SECRET_KEY}
 
   # permission policy for the lambda
   iamRoleStatements:
@@ -93,3 +94,19 @@ functions:
           method: delete
           cors: true
           authorizer: aws_iam          
+
+  # Defines an HTTP API endpoint that calls the main function in billing.js
+  # - path: url path is /billing
+  # - method: POST request          
+  billing:
+    handler: billing.main
+    events:
+      - http:
+          path: billing
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+resources:
+  #API Gateway Errors
+  - ${file(resources/api-gateway-errors.yml)}
